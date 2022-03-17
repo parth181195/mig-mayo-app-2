@@ -19,9 +19,19 @@ dependencies:
   google_fonts: ^2.1.0
   cupertino_icons: ^1.0.2
   json_annotation:
+
   eva_icons_flutter: ^3.0.0
   intl:
   ink_page_indicator: ^0.2.1
+  currency_text_input_formatter: ^2.1.5
+  dropdown_button2: ^1.2.0
+  dispose: ^0.0.5
+  form_field_validator: ^1.1.0
+  flutter_secure_storage: ^5.0.2
+  dio: ^4.0.4
+  dio_log: ^2.0.2
+  cool_dropdown: ^1.4.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

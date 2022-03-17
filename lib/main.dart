@@ -33,6 +33,7 @@ class _RootPageState extends State<RootPage> {
     return MaterialApp(
       navigatorKey: StackedService.navigatorKey,
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [StackedService.routeObserver],
       title: 'Mig Mayo',
       onGenerateRoute: StackedRouter().onGenerateRoute,
     );

@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:mig_mayo/ui/views/login/login.viewmodel.dart';
+import 'package:mig_mayo/ui/views/login/login_viewmodel.dart';
 import 'package:mig_ui/mig_ui.dart';
 import 'package:mig_ui/mig_ui.dart';
 import 'package:stacked/stacked.dart';
@@ -98,6 +98,7 @@ class _LoginViewState extends State<LoginView> {
                             child: Column(
                               children: [
                                 TextFormField(
+                                  controller: viewModel.emailTextEditingController,
                                   decoration: InputDecoration(
                                     filled: true,
                                     labelStyle: bodyStyle.copyWith(color: migBlackColor),
@@ -125,15 +126,18 @@ class _LoginViewState extends State<LoginView> {
                                   padding: const EdgeInsets.symmetric(vertical: 15),
                                 ),
                                 TextFormField(
-                                  obscureText: true,
+                                  controller: viewModel.passwordTextEditingController,
+                                  obscureText: viewModel.showPassword,
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: migWhiteColor,
                                     labelText: 'Password',
                                     suffixIcon: IconButton(
                                       color: migBlackColor.withOpacity(0.5),
-                                      icon: Icon(EvaIcons.eyeOff2Outline),
-                                      onPressed: () {},
+                                      icon: Icon(viewModel.showPassword ? EvaIcons.eyeOutline : EvaIcons.eyeOff2Outline),
+                                      onPressed: () {
+                                        viewModel.togglePasswordVisibility();
+                                      },
                                     ),
                                     labelStyle: bodyStyle.copyWith(color: migBlackColor),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -182,16 +186,16 @@ class _LoginViewState extends State<LoginView> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 5),
                           ),
-                          SizedBox.fromSize(
-                            size: Size(150, 35),
-                            child: TextButton(
-                              onPressed: () {
-                                viewModel.goToForgotPassword();
-                              },
-                              child: Text('Forgot Password!'),
-                              style: getButtonStyle(ButtonType.flat, 10.0),
-                            ),
-                          )
+                          // SizedBox.fromSize(
+                          //   size: Size(150, 35),
+                          //   child: TextButton(
+                          //     onPressed: () {
+                          //       viewModel.goToForgotPassword();
+                          //     },
+                          //     child: Text('Forgot Password!'),
+                          //     style: getButtonStyle(ButtonType.flat, 10.0),
+                          //   ),
+                          // )
                         ],
                       ),
                     ),

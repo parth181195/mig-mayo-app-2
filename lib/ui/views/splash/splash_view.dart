@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mig_mayo/ui/views/splash/splash.viewmodel.dart';
+import 'package:mig_mayo/ui/views/splash/splash_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 
 class SplashView extends StatefulWidget {
@@ -15,7 +15,16 @@ class _SplashViewState extends State<SplashView> {
         onModelReady: (model) async => await model.onInit(),
         builder: (context, viewModel, child) => Scaffold(
               body: Center(
-                child: Text('splash'),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      height: 30,
+                    ),
+                  ),
+                ),
               ),
             ));
   }
