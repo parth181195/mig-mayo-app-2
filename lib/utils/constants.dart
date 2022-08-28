@@ -21,6 +21,7 @@ class URLConstants {
   static String fetchItems = Constants.host + 'menu/fetch_items';
   static String fetchDailyBusiness = Constants.host + 'reports/daily_business';
   static String getDeliveryExecutivesDataOrder = Constants.host + 'delivery/fetch_delivery_executives';
+  static String deviceToken = Constants.host + 'fetch/device_token';
   static String setOrderReadStatus = Constants.host + 'orders/set_read_status';
   static String setOrderReadStatusRemark = Constants.host + 'orders/set_order_remark';
   static String generateOrderId = Constants.host + 'orders/id_generation';

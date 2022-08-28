@@ -9,6 +9,7 @@ class MenuModel {
   MenuModel({
     this.id,
     this.userEmail,
+    this.jsonData,
     this.itemCategory,
     this.items = const [],
   });
@@ -21,6 +22,7 @@ class MenuModel {
 
   MenuModel.fromJson(dynamic json) {
     id = json['id'];
+    jsonData = json;
     userEmail = json['userEmail'];
     itemCategory = json['itemCategory'];
     items = [];
@@ -35,13 +37,13 @@ class MenuModel {
 
   int? id;
   String? userEmail;
+  dynamic jsonData;
   String? itemCategory;
   late List<MenuItemModel> items;
 
   List<MenuItemModel> addedModelItems() {
     return items.where((element) => element.quantity! > 0).toList();
   }
-
   get itemsTotal {
     double itemTotal = 0;
     items.where((element) => element.quantity! > 0).forEach((element) {

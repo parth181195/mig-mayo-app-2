@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:intl/intl.dart';
 import 'package:mig_mayo/core/app.locator.dart';
+import 'package:mig_mayo/core/app.router.dart';
 import 'package:mig_mayo/models/addOrderModel.dart';
 import 'package:mig_mayo/models/menuItemModel.dart';
 import 'package:mig_mayo/models/order_model.dart';
@@ -20,12 +21,15 @@ class AddOrderViewModel extends BaseViewModel {
   DateTime selectedDate = DateTime.now();
   SnackbarService _snackbarService = locator<SnackbarService>();
   HttpService _httpService = locator<HttpService>();
-  SignUpFormData orderFormData = SignUpFormData();
+  OrderUpFormData orderFormData = OrderUpFormData();
   List<dynamic> vendorData = [];
+  bool activeMenuItemsViewIsVeg = true;
   List<MenuItemModel> menuItemData = [];
   List<MenuModel> menuData = [];
   int step = 1;
   late int orderID;
+
+  TextEditingController searchController = TextEditingController(text: '');
 
   init() async {
     setBusyForObject('loading', true);
@@ -48,7 +52,6 @@ class AddOrderViewModel extends BaseViewModel {
           .items
           .add(element);
     });
-    print(menuData);
   }
 
   getMenuItems() async {
@@ -103,7 +106,7 @@ class AddOrderViewModel extends BaseViewModel {
         vendor: orderFormData.vendor.value.text,
         contactNumber: orderFormData.contactNumber.value.text,
         customerName: orderFormData.customerName.value.text,
-        deliveryDateTime: orderFormData.deliveryDateTime.value.text,
+        deliveryDateTime: DateTime.parse(orderFormData.deliveryDateTime.value.text).toIso8601String(),
         isRead: false,
         orderId: int.parse(orderFormData.orderId.value.text),
         orderType: orderFormData.paymentType,
@@ -123,10 +126,44 @@ class AddOrderViewModel extends BaseViewModel {
     return payload;
   }
 
-  getOrderTotal() {
+  getVegOrNonVegMenu() {
     return menuData
+        .where((element) => activeMenuItemsViewIsVeg == element.isVeg)
+        .toList();
+  }
+
+  List<MenuModel> getSearchResults() {
+    List<MenuModel> menuClone = [];
+    menuData.forEach((e) => menuClone.add(MenuModel.fromJson(e.jsonData)));
+    menuItemData.forEach((element) {
+      menuClone
+          .firstWhere((menu) {
+        return menu.id == int.parse(element.itemCategoryId!);
+      })
+          .items
+          .add(element);
+    });
+    List data = menuClone.where((e) {
+      e.items = e.items
+          .where((element) {
+            return activeMenuItemsViewIsVeg == element.veg;
+          })
+          .where((element) {
+            return element.itemName!
+              .toLowerCase()
+              .contains(searchController.value.text.toLowerCase());
+          })
+          .toList();
+      return e.items.length != 0;
+    }).toList();
+    return data as List<MenuModel>;
+  }
+
+  getOrderTotal() {
+    var a = menuData
         .map((e) => e.itemsTotal)
         .reduce((value, element) => value + element);
+    return a;
   }
 
   getSelectedItems() {
@@ -157,6 +194,9 @@ class AddOrderViewModel extends BaseViewModel {
         setBusyForObject('addOrder', true);
         _httpService.addOrderData(prepareOrderPayload()).then((value) {
           setBusyForObject('addOrder', false);
+          _snackbarService.showSnackbar(message: 'Order Placed');
+          this._navigationService.navigateTo(Routes.ordersView,
+              arguments: OrdersViewArguments(order: OrderModel.fromJson(value?.data['order_data']!)));
         }).catchError((e) {
           setBusyForObject('addOrder', false);
         });
@@ -180,25 +220,25 @@ class AddOrderViewModel extends BaseViewModel {
   }
 }
 
-class SignUpFormData {
+class OrderUpFormData {
   bool submitted = false;
   GlobalKey<FormState> formStateKey = GlobalKey<FormState>();
-  TextEditingController orderId = TextEditingController(text: '');
-  TextEditingController vendor = TextEditingController(text: '');
-  TextEditingController trainNumName = TextEditingController(text: '');
-  TextEditingController coachSeat = TextEditingController(text: '');
-  TextEditingController customerName = TextEditingController(text: '');
-  TextEditingController contactNumber = TextEditingController(text: '');
+  TextEditingController orderId = TextEditingController(text: 'test');
+  TextEditingController vendor = TextEditingController(text: 'test');
+  TextEditingController trainNumName = TextEditingController(text: 'test');
+  TextEditingController coachSeat = TextEditingController(text: 'test');
+  TextEditingController customerName = TextEditingController(text: 'test');
+  TextEditingController contactNumber = TextEditingController(text: '8160073298');
   TextEditingController deliveryCharges = TextEditingController(text: '0');
   TextEditingController serviceCharges = TextEditingController(text: '0');
   TextEditingController discount = TextEditingController(text: '0');
   TextEditingController amountToCollect = TextEditingController(text: '0');
   TextEditingController advancePayment = TextEditingController(text: '0');
   TextEditingController GST = TextEditingController(text: '12');
-  TextEditingController deliveryDateTime = TextEditingController(text: '');
-  TextEditingController pnr = TextEditingController(text: '');
+  TextEditingController deliveryDateTime = TextEditingController(text: DateTime.now().toIso8601String());
+  TextEditingController pnr = TextEditingController(text: 'qwe');
   String paymentType = 'COD';
-  bool orderTypeIsVeg = false;
+  bool orderTypeIsVeg = true;
   TextEditingController isRead = TextEditingController(text: '');
   MultiValidator orderIdValidator = MultiValidator([
     RequiredValidator(errorText: 'Order ID is required'),

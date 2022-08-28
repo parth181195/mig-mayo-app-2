@@ -40,44 +40,48 @@ class OrderModel {
       this.isRead});
 
   OrderModel.fromJson(dynamic json) {
-    alphaId = changeNull(json['alphaId']);
-    userId = changeNull(json['userId']);
-    orderId = changeNull(json['orderId']);
-    vendor = changeNull(json['vendor']);
-    customerName = changeNull(json['Customer_name']);
-    contactNumber = changeNull(json['Contact_number']);
-    deliveryDateTime = DateTime.parse(json['Delivery_date_Time']);
-    switch (json['status']) {
-      case 'Active':
-        status = OrderStatus.Active;
-        break;
-      case 'Cancelled':
-        status = OrderStatus.Cancelled;
-        break;
-      case 'Delivered':
-        status = OrderStatus.Delivered;
-        break;
-      case 'Pending':
-        status = OrderStatus.Pending;
-        break;
-      case 'Pending':
-        status = OrderStatus.Pending;
-        break;
+    try {
+      alphaId = changeNull(json['alphaId']);
+      userId = changeNull(json['userId']);
+      orderId = changeNull(json['orderId']);
+      vendor = changeNull(json['vendor']);
+      customerName = changeNull(json['Customer_name']);
+      contactNumber = changeNull(json['Contact_number']);
+      deliveryDateTime = DateTime.parse(json['Delivery_date_Time']);
+      switch (json['status']) {
+        case 'Active':
+          status = OrderStatus.Active;
+          break;
+        case 'Cancelled':
+          status = OrderStatus.Cancelled;
+          break;
+        case 'Delivered':
+          status = OrderStatus.Delivered;
+          break;
+        case 'Pending':
+          status = OrderStatus.Pending;
+          break;
+        case 'Pending':
+          status = OrderStatus.Pending;
+          break;
 
-      case 'Confirmed':
-        status = OrderStatus.Confirmed;
-        break;
+        case 'Confirmed':
+          status = OrderStatus.Confirmed;
+          break;
+      }
+
+      remarks = changeNull(json['remarks']);
+      trainNumName = changeNull(json['Train_Num_Name']);
+      coachSeat = changeNull(json['Coach_Seat']);
+      pnr = changeNull(json['PNR']);
+      orderType = changeNull(json['Order_type']);
+      orderStatusRemarks = changeNull(json['orderStatusRemarks']);
+      deliveryExecutiveId = changeNull(json['deliveryExecutiveId']);
+      itemDetails = ItemDetailsModel.fromJson(json['itemDetails']);
+      isRead = json['isRead'];
+    } catch (e) {
+      print(e);
     }
-
-    remarks = changeNull(json['remarks']);
-    trainNumName = changeNull(json['Train_Num_Name']);
-    coachSeat = changeNull(json['Coach_Seat']);
-    pnr = changeNull(json['PNR']);
-    orderType = changeNull(json['Order_type']);
-    orderStatusRemarks = changeNull(json['orderStatusRemarks']);
-    deliveryExecutiveId = changeNull(json['deliveryExecutiveId']);
-    itemDetails = ItemDetailsModel.fromJson(json['itemDetails']);
-    isRead = json['isRead'];
   }
 
   changeNull(data) {

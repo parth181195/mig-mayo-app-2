@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mig_mayo/core/app.locator.dart';
 import 'package:mig_mayo/core/app.router.dart';
 import 'package:mig_mayo/models/deliveryExecutiveModel.dart';
@@ -12,20 +13,23 @@ import 'package:mig_mayo/models/order_model.dart';
 import 'package:mig_mayo/models/order_status.dart';
 import 'package:mig_mayo/models/setOrderStatusResponseModel.dart';
 import 'package:mig_mayo/services/drawer_service.dart';
+import 'package:mig_mayo/services/firebase_service.dart';
 import 'package:mig_mayo/services/http_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends BaseViewModel {
+  bool registeredToSink = false;
+  FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   DrawerService drawerService = locator<DrawerService>();
   SnackbarService _snackbarService = locator<SnackbarService>();
+  FirebaseService _firebaseService = locator<FirebaseService>();
   NavigationService _navigationService = locator<NavigationService>();
   TextEditingController remarkTextEditingController = TextEditingController();
   late StreamSubscription routeSub;
   late TabController tabController;
   List<DeliveryExecutiveModel> deliveryExecutiveData = [];
   List<DropDownModel> dropdownItemList = [
-    DropDownModel<OrderStatus>(label: 'Active', value: OrderStatus.Active),
     DropDownModel<OrderStatus>(
         label: 'Confirmed', value: OrderStatus.Confirmed),
     DropDownModel<OrderStatus>(
@@ -73,23 +77,6 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
-  getOrderLocation(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.Active:
-        return 'active';
-      case OrderStatus.Confirmed:
-        return 'confirmed';
-      case OrderStatus.Cancelled:
-        return 'cancelled';
-      case OrderStatus.Delivered:
-        return 'delivered';
-      case OrderStatus.Undelivered:
-        return 'unDelivered';
-      case OrderStatus.Pending:
-        return 'pending';
-    }
-  }
-
   getStatusEnum(String status) {
     switch (status) {
       case 'Active':
@@ -107,10 +94,34 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
+  getOrderLocation(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.Active:
+        return 'active';
+      case OrderStatus.Confirmed:
+        return 'confirmed';
+      case OrderStatus.Cancelled:
+        return 'cancelled';
+      case OrderStatus.Delivered:
+        return 'delivered';
+      case OrderStatus.Undelivered:
+        return 'unDelivered';
+      case OrderStatus.Pending:
+        return 'pending';
+    }
+  }
+
   late StreamSubscription<OrderStatus> orderStatusSub;
   HttpService _httpService = locator<HttpService>();
 
   init(TabController controller) async {
+    if (!registeredToSink) {
+      _firebaseService.refreshOrders.stream.listen((event) {
+        init(tabController);
+        registeredToSink = true;
+      });
+    }
+    _secureStorage.deleteAll();
     _snackbarService.registerSnackbarConfig(SnackbarConfig(
       backgroundColor: Colors.black,
       textColor: Colors.white,
@@ -124,13 +135,17 @@ class HomeViewModel extends BaseViewModel {
     });
     notifyListeners();
     this.tabController = controller;
-    if (this._navigationService.currentArguments != null &&
-        (this._navigationService.currentArguments
-                as Map<dynamic, dynamic>)['status'] !=
-            null) {
-      this.tabController.animateTo(((this._navigationService.currentArguments
-              as Map<dynamic, dynamic>)['status'] as OrderStatus)
-          .index);
+    if (this._navigationService.currentArguments != null) {
+      if ((this._navigationService.currentArguments.order.status) != null) {
+        this.tabController.animateTo(((this
+                ._navigationService
+                .currentArguments
+                .order
+                .status) as OrderStatus)
+            .index);
+      }
+    } else {
+      this.tabController.animateTo(0);
     }
     tabController.addListener(() {
       notifyListeners();
@@ -148,7 +163,7 @@ class HomeViewModel extends BaseViewModel {
         _httpService.getDeliveredOrderData(),
         _httpService.getUnDeliveredOrderData(),
         _httpService.getPendingOrderData()
-      ]).then((value) {
+      ]).then((value) async {
         value.asMap().forEach((index, element) {
           if (element != null && element.data != '') {
             (jsonDecode(element.data) as List<dynamic>).forEach((order) {
@@ -214,6 +229,8 @@ class HomeViewModel extends BaseViewModel {
           });
           notifyListeners();
         });
+        await _firebaseService.registerToken();
+        await _firebaseService.initMessages();
       });
     });
   }

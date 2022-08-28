@@ -1,6 +1,3 @@
-
-
-import 'package:dio_log/overlay_draggable_button.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,14 +19,13 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   late TabController tabController;
 
   @override
   void initState() {
     // TODO: implement initState
     tabController = TabController(vsync: this, length: 7);
-    showDebugBtn(context, btnColor: Colors.blue);
+    // showDebugBtn(context, btnColor: Colors.blue);
     super.initState();
   }
 
@@ -197,6 +193,7 @@ class _HomeViewState extends State<HomeView>
                                                           DropdownButtonFormField2(
                                                         decoration:
                                                             InputDecoration(
+                                                              label: Text('Change Status'),
                                                           //Add isDense true and zero Padding.
                                                           //Add Horizontal padding using buttonPadding and Vertical padding by increasing buttonHeight instead of add Padding here so that The whole TextField Button become clickable, and also the dropdown menu open under The whole TextField Button.
                                                           isDense: true,
@@ -240,12 +237,12 @@ class _HomeViewState extends State<HomeView>
                                                         ),
                                                         buttonWidth:
                                                             double.maxFinite,
-                                                        value:
-                                                            model.getStatusEnum(
-                                                                payload
-                                                                    .status!),
                                                         items: model
                                                             .dropdownItemList
+                                                            .where((element) {
+                                                              return order.status !=
+                                                                element.value;
+                                                            }).toList()
                                                             .map((DropDownModel
                                                                 e) {
                                                           return DropdownMenuItem(

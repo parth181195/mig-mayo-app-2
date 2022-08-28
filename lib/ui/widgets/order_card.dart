@@ -3,6 +3,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:mig_mayo/models/order_model.dart';
 import 'package:mig_mayo/models/order_status.dart';
 import 'package:mig_ui/mig_ui.dart';
@@ -208,13 +209,12 @@ class _OrderCardState extends State<OrderCard> {
                             data: widget.orderModel.contactNumber,
                             title: 'Mobile No.'),
                         OrderColDetails(
-                          data: widget.orderModel.deliveryDateTime!.day
-                              .toString(),
+                          data: DateFormat('hh:mm a').format(widget.orderModel.deliveryDateTime!),
                           title: 'Time',
                           crossAxisAlignment: CrossAxisAlignment.center,
                         ),
                         OrderColDetails(
-                          data: widget.orderModel.deliveryDateTime!.day
+                          data: DateFormat('yyyy-MM-dd').format(widget.orderModel.deliveryDateTime!)
                               .toString(),
                           title: 'Date',
                           crossAxisAlignment: CrossAxisAlignment.end,

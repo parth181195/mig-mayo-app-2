@@ -124,6 +124,9 @@ class ItemDetails {
     }
   }
 
+  toOrderModel() {
+
+  }
   double? gst;
   double? tax;
   double? discount;

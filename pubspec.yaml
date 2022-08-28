@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  dio_log: ^2.0.3
   stacked:
   mig_ui:
     path: ../mig_ui
@@ -19,7 +19,6 @@ dependencies:
   google_fonts: ^2.1.0
   cupertino_icons: ^1.0.2
   json_annotation:
-
   eva_icons_flutter: ^3.0.0
   intl:
   ink_page_indicator: ^0.2.1
@@ -27,10 +26,15 @@ dependencies:
   dropdown_button2: ^1.2.0
   dispose: ^0.0.5
   form_field_validator: ^1.1.0
-  flutter_secure_storage: ^5.0.2
+  flutter_secure_storage: ^6.0.0
   dio: ^4.0.4
-  dio_log: ^2.0.2
+  uuid: ^3.0.6
+  date_time_picker: ^2.1.0
   cool_dropdown: ^1.4.1
+  firebase_crashlytics: ^2.6.2
+  firebase_core:
+  firebase_messaging: ^11.4.2
+  overlay_support: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -38,11 +42,16 @@ dev_dependencies:
   build_runner:
   json_serializable:
   stacked_generator:
+  flutter_launcher_icons: "^0.10.0"
 
 flutter:
 
   uses-material-design: true
-
   assets:
     - google_fonts/
     - assets/images/
+
+flutter_icons:
+  android: "launcher_icon"
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21

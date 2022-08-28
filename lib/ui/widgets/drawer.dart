@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mig_mayo/core/app.locator.dart';
+import 'package:mig_mayo/core/app.router.dart';
 import 'package:mig_mayo/models/orderDataCountModel.dart';
 import 'package:mig_mayo/models/order_status.dart';
+import 'package:mig_mayo/services/auth_service.dart';
 import 'package:mig_mayo/services/drawer_service.dart';
 import 'package:mig_mayo/ui/widgets/chip_widget.dart';
 import 'package:mig_mayo/ui/widgets/drawerViewModel.dart';
 import 'package:mig_ui/mig_ui.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 class MigDrawer extends StatefulWidget {
   @override
@@ -19,6 +22,8 @@ class _MigDrawerState extends State<MigDrawer> {
   DateTimeRange selectedDate =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
   DrawerService _drawerService = locator<DrawerService>();
+  AuthService _authService = locator<AuthService>();
+  NavigationService _navigationService = locator<NavigationService>();
   TextEditingController _controller = TextEditingController(
       text: DateFormat('dd-MM-yyyy').format(DateTime.now()) +
           ' - ' +
@@ -175,7 +180,7 @@ class _MigDrawerState extends State<MigDrawer> {
                             fontWeight: FontWeight.w400, fontSize: 16),
                       ),
                       Text(
-                        '₹${model.dailyBusinessData.totalAmount?.toStringAsFixed(2)!}',
+                        '₹${model.dailyBusinessData.totalAmount?.toStringAsFixed(2)}',
                         style: GoogleFonts.openSans(
                             color: migOrderStatusPendingColor,
                             fontWeight: FontWeight.w400,
@@ -191,12 +196,12 @@ class _MigDrawerState extends State<MigDrawer> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Online Orders (${model.dailyBusinessData.onlineOrders?.toStringAsFixed(0)!})',
+                        'Online Orders (${model.dailyBusinessData.onlineOrders?.toStringAsFixed(0)})',
                         style: GoogleFonts.openSans(
                             fontWeight: FontWeight.w400, fontSize: 16),
                       ),
                       Text(
-                        '₹${model.dailyBusinessData.onlineOrdersTotal?.toStringAsFixed(2)!}',
+                        '₹${model.dailyBusinessData.onlineOrdersTotal?.toStringAsFixed(2)}',
                         style: GoogleFonts.openSans(
                             color: migOrderStatusPendingColor,
                             fontWeight: FontWeight.w400,
@@ -212,12 +217,12 @@ class _MigDrawerState extends State<MigDrawer> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'COD Orders (${model.dailyBusinessData.cODOrders?.toStringAsFixed(0)!})',
+                        'COD Orders (${model.dailyBusinessData.cODOrders?.toStringAsFixed(0)})',
                         style: GoogleFonts.openSans(
                             fontWeight: FontWeight.w400, fontSize: 16),
                       ),
                       Text(
-                        '₹${model.dailyBusinessData.cODOrdersTotal?.toStringAsFixed(2)!}',
+                        '₹${model.dailyBusinessData.cODOrdersTotal?.toStringAsFixed(2)}',
                         style: GoogleFonts.openSans(
                             color: migOrderStatusPendingColor,
                             fontWeight: FontWeight.w400,
@@ -380,8 +385,9 @@ class _MigDrawerState extends State<MigDrawer> {
             ),
           ),
           InkWell(
-            onTap: () {
-              model.drawerService.goToOrderPage(OrderStatus.Pending);
+            onTap: () async {
+              await _authService.logOut();
+              _navigationService.clearStackAndShow(Routes.loginView);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
@@ -390,14 +396,8 @@ class _MigDrawerState extends State<MigDrawer> {
                 direction: Axis.horizontal,
                 children: [
                   Text(
-                    'Undelivered',
+                    'Logout',
                     style: heading2Style.copyWith(fontSize: 16),
-                  ),
-                  ChipWidget(
-                    // number: snapshot.data == null
-                    //     ? 0
-                    //     : snapshot.data!.pending,
-                    status: OrderStatus.Pending,
                   ),
                 ],
               ),

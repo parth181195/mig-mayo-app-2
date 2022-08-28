@@ -653,6 +653,7 @@ class _OrdersViewState extends State<OrdersView> {
                                                                     DropdownButtonFormField2(
                                                                   decoration:
                                                                       InputDecoration(
+                                                                        label: Text('Change Status'),
                                                                     //Add isDense true and zero Padding.
                                                                     //Add Horizontal padding using buttonPadding and Vertical padding by increasing buttonHeight instead of add Padding here so that The whole TextField Button become clickable, and also the dropdown menu open under The whole TextField Button.
                                                                     isDense:
@@ -695,27 +696,29 @@ class _OrdersViewState extends State<OrdersView> {
                                                                   buttonWidth:
                                                                       double
                                                                           .maxFinite,
-                                                                  value: model
-                                                                      .getStatusEnum(
-                                                                          payload
-                                                                              .status!),
                                                                   items: model
                                                                       .dropdownItemList
+                                                                      .where(
+                                                                          (element) {
+                                                                        return widget.order.status !=
+                                                                            element.value;
+                                                                      })
+                                                                      .toList()
                                                                       .map((DropDownModel
                                                                           e) {
-                                                                    return DropdownMenuItem(
-                                                                      enabled: widget.order
-                                                                              .status !=
-                                                                          e.value,
-                                                                      child: Opacity(
-                                                                          child: Text(
-                                                                            e.label,
-                                                                          ),
-                                                                          opacity: widget.order.status != e.value ? 1 : 0.5),
-                                                                      value: e
-                                                                          .value,
-                                                                    );
-                                                                  }).toList(),
+                                                                        return DropdownMenuItem(
+                                                                          enabled:
+                                                                              widget.order.status != e.value,
+                                                                          child: Opacity(
+                                                                              child: Text(
+                                                                                e.label,
+                                                                              ),
+                                                                              opacity: widget.order.status != e.value ? 1 : 0.5),
+                                                                          value:
+                                                                              e.value,
+                                                                        );
+                                                                      })
+                                                                      .toList(),
                                                                   onChanged:
                                                                       (value) {
                                                                     setStateModel(
@@ -889,7 +892,8 @@ class _OrdersViewState extends State<OrdersView> {
                                                                   ),
                                                                 ),
                                                               ElevatedButton(
-                                                                onPressed: widget.order
+                                                                onPressed: widget
+                                                                            .order
                                                                             .status !=
                                                                         model.getStatusEnum(payload
                                                                             .status!)

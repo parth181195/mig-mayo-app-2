@@ -9,8 +9,13 @@ class AuthService {
   Dio dio = Dio();
 
   readToken() async {
-    _token = await _storage.read(key: Constants.jwtKey);
-    return _token;
+    try {
+      if(_token != null){
+        return _token;
+      }
+      _token = await _storage.read(key: Constants.jwtKey);
+      return _token;
+    } catch (e) {}
   }
 
   readExistingToken() {
@@ -18,8 +23,13 @@ class AuthService {
   }
 
   readRefreshToken() async {
-    _refreshToken = await _storage.read(key: Constants.jwtRefreshKey);
-    return _refreshToken;
+    try {
+      if(_refreshToken != null){
+        return _refreshToken;
+      }
+      _refreshToken = await _storage.read(key: Constants.jwtRefreshKey);
+      return _refreshToken;
+    } catch (e) {}
   }
 
   Future writeToken(String token) {
@@ -37,10 +47,14 @@ class AuthService {
     try {
       var response = await Dio().post(URLConstants.login, data: payload);
       print(response);
-      return Future.wait([
+     await  Future.wait([
         writeToken(response.data['access_token']),
         writeRefreshToken(response.data['refresh_token'])
-      ]).then((value) => true);
+      ]).then((value) {
+        print(value);
+        return true;
+      });
+      return Future.delayed(Duration(milliseconds: 800)).then((value) => true);
     } catch (e) {
       print(e);
       return false;
@@ -51,12 +65,14 @@ class AuthService {
     try {
       var response = await Dio().get(URLConstants.refreshToken,
           options: Options(headers: {'Refreshtoken': _refreshToken}));
-      await writeToken(response.data['access_token']);
-      await writeRefreshToken(response.data['refresh_token']);
-      return true;
+      await Future.wait([
+        writeToken(response.data['access_token']),
+        writeRefreshToken(response.data['refresh_token'])
+      ]);
+      return response.data['access_token'];
     } catch (e) {
       print(e);
-      return false;
+      return Future.value(false);
     }
   }
 
